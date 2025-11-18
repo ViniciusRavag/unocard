@@ -19,7 +19,7 @@
 
     .card-container {
       perspective: 800px;
-      margin-bottom: 20px;
+      margin-bottom: 2rem;
     }
 
     .card {
@@ -213,32 +213,28 @@
       font-size: 2rem;
     }
 
-    .button-container {
-      margin-top: 20px;
-    }
-
-    .click-button {
-      padding: 12px 24px;
-      font-size: 18px;
-      font-weight: bold;
-      background-color: #bb7ce6;
+    .purple-button {
+      background-color: #8A2BE2;
       color: white;
       border: none;
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      font-weight: bold;
       border-radius: 8px;
       cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.3s ease, transform 0.2s ease;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      transition: all 0.3s ease;
     }
 
-    .click-button:hover {
-      background-color: #bb7ce6;
+    .purple-button:hover {
+      background-color: #7a1ad2;
       transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     }
 
-    .click-button:active {
+    .purple-button:active {
       transform: translateY(0);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
   </style>
 </head>
@@ -258,9 +254,6 @@
       </div>
     </div>
   </div>
-  <div class="button-container">
-    <button class="click-button" onclick="window.location.href="https://viniciusravag.github.io/nosso-album/">Clique Aqui</button>
-  </div>
+  <a href="https://viniciusravag.github.io/nosso-album/" class="purple-button">Clique Aqui</a>
 </body>
 </html>
-
