@@ -9,6 +9,7 @@
       margin: 0;
       padding: 0;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
@@ -18,6 +19,7 @@
 
     .card-container {
       perspective: 800px;
+      margin-bottom: 20px;
     }
 
     .card {
@@ -210,6 +212,34 @@
       color: white;
       font-size: 2rem;
     }
+
+    .button-container {
+      margin-top: 20px;
+    }
+
+    .click-button {
+      padding: 12px 24px;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: #cb0323;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .click-button:hover {
+      background-color: #bb7ce6;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .click-button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -228,6 +258,8 @@
       </div>
     </div>
   </div>
+  <div class="button-container">
+    <button class="click-button">Clique Aqui</button>
+  </div>
 </body>
-
 </html>
