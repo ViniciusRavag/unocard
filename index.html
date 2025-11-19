@@ -47,11 +47,13 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      transition: all 0.3s ease;
     }
 
     .card-container {
-      perspective: 800px;
+      perspective: 1200px;
       margin-bottom: 2rem;
+      transition: margin-bottom 0.75s ease;
     }
 
     .card {
@@ -61,7 +63,7 @@
       background: #fffffd;
       border-radius: 1em;
       box-shadow: 0 0 6px -4px black;
-      transition: 0.75s all;
+      transition: 0.75s all cubic-bezier(0.4, 0, 0.2, 1);
       transform-style: preserve-3d;
       cursor: pointer;
     }
@@ -80,8 +82,14 @@
       filter: blur(24px);
     }
 
+    .card-container:hover {
+      margin-bottom: 4rem;
+    }
+
     .card-container:hover .card {
-      transform: rotateY(180deg);
+      transform: rotateY(180deg) scale(1.8);
+      width: 210px;
+      height: 332px;
     }
 
     .back {
@@ -245,28 +253,27 @@
       font-size: 2rem;
     }
 
-    .purple-button {
-      background-color: #8A2BE2;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
+    .custom-button {
+      outline: none;
+      color: #DAA06D;
+      padding: 1em;
+      padding-left: 3em;
+      padding-right: 3em;
+      border: 2px dashed #DAA06D;
+      border-radius: 15px;
+      background-color: #EADDCA;
+      box-shadow: 0 0 0 4px #EADDCA, 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
+      transition: .1s ease-in-out, .4s color;
       text-decoration: none;
       display: inline-block;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: 1rem;
     }
 
-    .purple-button:hover {
-      background-color: #7a1ad2;
-      transform: translateY(-2px);
-    }
-
-    .purple-button:active {
-      transform: translateY(0);
+    .custom-button:active {
+      transform: translateX(0.1em) translateY(0.1em);
+      box-shadow: 0 0 0 4px #EADDCA, 1.5px 1.5px 2.5px 1.5px rgba(0, 0, 0, 0.5);
     }
   </style>
 </head>
@@ -286,6 +293,6 @@
       </div>
     </div>
   </div>
-  <a href="https://viniciusravag.github.io/nosso-album/" class="purple-button">Clique Aqui</a>
+  <a href="https://viniciusravag.github.io/nosso-album/" class="custom-button">Clique aqui</a>
 </body>
 </html>
