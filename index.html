@@ -1,299 +1,639 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carta Interativa com Imagem</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-      /* Cor de fundo violeta */
-      background-color: #CB9BDE;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Casamento | Nossa História</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-      /* Pattern de linhas brancas com opacidade */
-      background-image:
-        linear-gradient(0deg,
-          transparent 24%,
-          rgba(255, 255, 255, 0.2) 25%,
-          rgba(255, 255, 255, 0.2) 26%,
-          transparent 27%,
-          transparent 74%,
-          rgba(255, 255, 255, 0.2) 75%,
-          rgba(255, 255, 255, 0.2) 76%,
-          transparent 77%,
-          transparent
-        ),
-        linear-gradient(90deg,
-          transparent 24%,
-          rgba(255, 255, 255, 0.2) 25%,
-          rgba(255, 255, 255, 0.2) 26%,
-          transparent 27%,
-          transparent 74%,
-          rgba(255, 255, 255, 0.2) 75%,
-          rgba(255, 255, 255, 0.2) 76%,
-          transparent 77%,
-          transparent
-        );
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-      /* Tamanho do grid */
-      background-size: 55px 55px;
+    <!-- Configuração de Estilos Personalizados -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        wedding: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            200: '#fbcfe8',
+                            300: '#f9a8d4',
+                            400: '#f472b6',
+                            500: '#ec4899', // Rosa Principal
+                            600: '#db2777',
+                            700: '#be185d',
+                            800: '#9d174d',
+                            900: '#831843',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Fontes -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
-      /* Garantir que o fundo cubra toda a área */
-      background-repeat: repeat;
-      
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      transition: all 0.3s ease;
-    }
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fdf2f8; }
+        h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
+        
+        /* Scrollbar Oculta para Feed */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
 
-    .card-container {
-      perspective: 1200px;
-      margin-bottom: 2rem;
-      transition: margin-bottom 0.75s ease;
-    }
-
-    .card {
-      position: relative;
-      width: 210px;
-      height: 332px;
-      background: #fffffd;
-      border-radius: 1em;
-      box-shadow: 0 0 6px -4px black;
-      transition: 0.75s all cubic-bezier(0.4, 0, 0.2, 1);
-      transform-style: preserve-3d;
-      cursor: pointer;
-    }
-
-    .card::before {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 210px;
-      height: 110px;
-      transform: translate(0em, 60%) rotateX(90deg) scale(0.8);
-      border-radius: 100%;
-      background-color: #000a;
-      z-index: -10;
-      filter: blur(24px);
-    }
-
-    .card-container:hover {
-      margin-bottom: 4rem;
-    }
-
-    .card-container:hover .card {
-      transform: rotateY(180deg) scale(1.8);
-      width: 210px;
-      height: 332px;
-    }
-
-    .back {
-      position: absolute;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      inset: 0.7em;
-      border-radius: 1.25em;
-      background: #191f1f;
-      overflow: hidden;
-    }
-
-    .red {
-      position: absolute;
-      background: #cb0323;
-      inset: 0;
-      border-radius: 100%;
-      transform-origin: center;
-      transform: scale(0.875) skewX(-22.5deg);
-    }
-
-    .back .text {
-      position: absolute;
-      font-size: 5em;
-      font-weight: 800;
-      color: #e4c713;
-      transform-origin: center;
-      transform: rotate(-15deg) translateX(5px);
-      text-shadow:
-        2px 2px #f1e8ad,
-        2px 1px #f1e8ad,
-        2px 0px #f1e8ad,
-        2px -1px #f1e8ad,
-        2px -2px #f1e8ad,
-        1px -2px #f1e8ad,
-        0px -2px #f1e8ad,
-        -1px -2px #f1e8ad,
-        -2px -2px #f1e8ad,
-        -2px -1px #f1e8ad,
-        -2px 0px #f1e8ad,
-        -2px 1px #f1e8ad,
-        -2px 2px #f1e8ad,
-        -12px 10px #191f1f,
-        -10px 10px #191f1f,
-        -9px 9.428571429px #191f1f,
-        -8px 8.857142857px #191f1f,
-        -7px 8.285714286px #191f1f,
-        -6px 7.714285714px #191f1f,
-        -5px 7.142857143px #191f1f,
-        -4px 6.571428572px #191f1f,
-        -3px 6px #191f1f,
-        -2px 5.428571429px #191f1f,
-        -1px 4.857142857px #191f1f,
-        0px 4.285714286px #191f1f,
-        1px 3.714285715px #191f1f,
-        2px 3.142857143px #191f1f,
-        3px 2.571428572px #191f1f,
-        4px 2px #191f1f,
-        4px -4px #191f1f,
-        -4px -4px #191f1f,
-        -5px -3px #191f1f,
-        -6px -2px #191f1f,
-        -7px -1px #191f1f,
-        -8px 0px #191f1f,
-        -9px 1px #191f1f,
-        -10px 2px #191f1f,
-        -11px 3px #191f1f,
-        -12px 4px #191f1f,
-        -14px 4px #fffffd,
-        -13px 3px #fffffd,
-        -12px 2px #fffffd,
-        -11px 1px #fffffd,
-        -10px 0px #fffffd,
-        -9px -1px #fffffd,
-        -8px -2px #fffffd,
-        -7px -3px #fffffd,
-        -6px -4px #fffffd,
-        -5px -5px #fffffd,
-        -4px -6px #fffffd,
-        -3px -6px #fffffd,
-        0px -6px #fffffd,
-        3px -6px #fffffd,
-        6px -6px #fffffd,
-        -14px 12px #fffffd,
-        -8px 12px #fffffd,
-        -7px 11.5px #fffffd,
-        -6px 11px #fffffd,
-        -5px 10.5px #fffffd,
-        -4px 10px #fffffd,
-        -3px 9.5px #fffffd,
-        -2px 9px #fffffd,
-        -1px 8.5px #fffffd,
-        0px 8px #fffffd,
-        1px 7.5px #fffffd,
-        2px 7px #fffffd,
-        3px 6.5px #fffffd,
-        4px 6px #fffffd,
-        5px 5.5px #fffffd,
-        6px 4px #fffffd;
-    }
-
-    .front {
-      position: absolute;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      inset: 0.7em;
-      border-radius: 1.25em;
-      background: #cb0323;
-      overflow: hidden;
-      transform: rotateY(180deg);
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
-
-    .front .red {
-      border: 0.7em solid #fffffd;
-      transform: scale(0.92, 0.875) skewX(-22.5deg);
-    }
-
-    .front img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 1.25em;
-      z-index: 1;
-    }
-
-    .text-center {
-      position: absolute;
-      width: 12em;
-      color: white;
-      text-align: center;
-      font-size: 6em;
-      text-shadow:
-        -2px -3px 0 #000,
-        -1px -1px 0 #000,
-        -1px 1px 0 #000,
-        1px 1px 0 #000;
-    }
-
-    .text-top {
-      position: absolute;
-      top: 0.2em;
-      left: 0.5em;
-      width: 3em;
-      color: white;
-      font-size: 2rem;
-    }
-
-    .text-bottom {
-      position: absolute;
-      bottom: 0.2em;
-      right: 0em;
-      width: 1em;
-      color: white;
-      font-size: 2rem;
-    }
-
-    .custom-button {
-      outline: none;
-      color: #DAA06D;
-      padding: 1em;
-      padding-left: 3em;
-      padding-right: 3em;
-      border: 2px dashed #DAA06D;
-      border-radius: 15px;
-      background-color: #EADDCA;
-      box-shadow: 0 0 0 4px #EADDCA, 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
-      transition: .1s ease-in-out, .4s color;
-      text-decoration: none;
-      display: inline-block;
-      font-weight: bold;
-      font-size: 1.1rem;
-      margin-top: 1rem;
-    }
-
-    .custom-button:active {
-      transform: translateX(0.1em) translateY(0.1em);
-      box-shadow: 0 0 0 4px #EADDCA, 1.5px 1.5px 2.5px 1.5px rgba(0, 0, 0, 0.5);
-    }
-  </style>
+        /* TikTok/Reels Scroll Snap */
+        .reels-container {
+            scroll-snap-type: y mandatory;
+            height: calc(100vh - 140px); /* Ajuste para Header e Nav */
+            overflow-y: scroll;
+        }
+        .reels-item {
+            scroll-snap-align: start;
+            height: 100%;
+        }
+    </style>
 </head>
 <body>
-  <div class="card-container">
-    <div class="card">
-      <div class="back">
-        <div class="red"></div>
-        <div class="text">UNO</div>
-      </div>
-      <div class="front">
-        <div class="red"></div>
-        <img src="https://framerusercontent.com/images/aW1vpdCxOdKOkD298T1XEd6HLc.png">
-        <div class="text-top">5</div>
-        <div class="text-center">5</div>
-        <div class="text-bottom">5</div>
-      </div>
-    </div>
-  </div>
-  <a href="https://viniciusravag.github.io/nosso-album/" class="custom-button">Clique aqui</a>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useCallback } = React;
+        const { Camera, Heart, MessageCircle, Grid, Film, Upload, Send, User, X, Check, Share2, Download } = lucide;
+
+        // ==========================================
+        // CONFIGURAÇÃO DO FIREBASE
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY_AQUI",
+            authDomain: "SEU_PROJETO.firebaseapp.com",
+            projectId: "SEU_PROJETO_ID",
+            storageBucket: "SEU_PROJETO.appspot.com",
+            messagingSenderId: "SEU_SENDER_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        // Inicialização Segura (Fallback para Demo se não houver chaves)
+        let db, storage, auth;
+        let isFirebaseActive = false;
+
+        try {
+            if (firebaseConfig.apiKey !== "SUA_API_KEY_AQUI") {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                storage = firebase.storage();
+                auth = firebase.auth();
+                isFirebaseActive = true;
+                console.log("Firebase Conectado!");
+            } else {
+                console.warn("Firebase não configurado. Rodando em Modo Demo.");
+            }
+        } catch (e) {
+            console.error("Erro ao iniciar Firebase:", e);
+        }
+
+        // ==========================================
+        // SERVIÇOS E UTILITÁRIOS
+        // ==========================================
+        
+        // Gerador de ID simples para o modo demo
+        const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
+
+        // Simulação de Banco de Dados Local (Para funcionar sem backend real)
+        const localData = {
+            photos: [
+                { id: '1', url: 'https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', likes: 12, comments: [], user: 'Maria', timestamp: Date.now(), type: 'image' },
+                { id: '2', url: 'https://images.unsplash.com/photo-1511285560982-1351cdeb9821?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', likes: 45, comments: [{user: 'João', text: 'Lindo!'}], user: 'Pedro', timestamp: Date.now() - 10000, type: 'image' },
+                { id: '3', url: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', likes: 8, comments: [], user: 'Ana', timestamp: Date.now() - 50000, type: 'image' },
+            ],
+            listeners: []
+        };
+
+        const subscribeToPhotos = (callback) => {
+            if (isFirebaseActive && db) {
+                return db.collection('photos').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                    const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    callback(photos);
+                });
+            } else {
+                // Simulação
+                localData.listeners.push(callback);
+                callback(localData.photos);
+                return () => {
+                    localData.listeners = localData.listeners.filter(l => l !== callback);
+                };
+            }
+        };
+
+        const uploadPhoto = async (file, userName) => {
+            const photoData = {
+                id: generateId(),
+                url: URL.createObjectURL(file), // Blob URL para preview local
+                likes: 0,
+                comments: [],
+                user: userName || 'Convidado',
+                timestamp: Date.now(),
+                type: file.type.startsWith('video') ? 'video' : 'image'
+            };
+
+            if (isFirebaseActive && storage) {
+                // Lógica Real Firebase
+                const storageRef = storage.ref(`photos/${photoData.id}`);
+                await storageRef.put(file);
+                const url = await storageRef.getDownloadURL();
+                photoData.url = url;
+                await db.collection('photos').add(photoData);
+            } else {
+                // Simulação
+                localData.photos.unshift(photoData);
+                localData.listeners.forEach(cb => cb(localData.photos));
+            }
+            return photoData;
+        };
+
+        const toggleLike = async (id, currentLikes) => {
+            if (isFirebaseActive && db) {
+                const docRef = db.collection('photos').doc(id);
+                await docRef.update({ likes: currentLikes + 1 }); // Simplificado (deveria checar se já deu like)
+            } else {
+                const photo = localData.photos.find(p => p.id === id);
+                if (photo) {
+                    photo.likes += 1;
+                    localData.listeners.forEach(cb => cb(localData.photos));
+                }
+            }
+        };
+
+        const addComment = async (id, text, userName) => {
+            if (isFirebaseActive && db) {
+                const docRef = db.collection('photos').doc(id);
+                const newComment = { user: userName, text, timestamp: Date.now() };
+                await docRef.update({ comments: firebase.firestore.FieldValue.arrayUnion(newComment) });
+            } else {
+                const photo = localData.photos.find(p => p.id === id);
+                if (photo) {
+                    photo.comments.push({ user: userName, text, timestamp: Date.now() });
+                    localData.listeners.forEach(cb => cb(localData.photos));
+                }
+            }
+        };
+
+        // ==========================================
+        // COMPONENTES
+        // ==========================================
+
+        // --- Toast Notification ---
+        const Toast = ({ message, type, onClose }) => {
+            useEffect(() => {
+                const timer = setTimeout(onClose, 3000);
+                return () => clearTimeout(timer);
+            }, []);
+
+            const bg = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+
+            return (
+                <div className={`fixed top-20 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full shadow-lg text-white font-medium z-50 animate-slide-up ${bg}`}>
+                    {message}
+                </div>
+            );
+        };
+
+        // --- Header ---
+        const Header = ({ view, setView }) => (
+            <header className="fixed top-0 w-full z-40 bg-white/80 backdrop-blur-md border-b border-wedding-100 shadow-sm transition-all duration-300">
+                <div className="max-w-md mx-auto px-4 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-wedding-500 rounded-full flex items-center justify-center text-white">
+                            <span className="serif font-bold text-lg">A</span>
+                        </div>
+                        <h1 className="text-xl font-bold text-wedding-900 tracking-tight">Ana & João</h1>
+                    </div>
+                    
+                    <div className="flex gap-1 bg-wedding-50 p-1 rounded-full">
+                        <button 
+                            onClick={() => setView('grid')}
+                            className={`p-2 rounded-full transition-all ${view === 'grid' ? 'bg-white shadow text-wedding-600' : 'text-gray-400 hover:text-wedding-400'}`}
+                        >
+                            <Grid size={20} />
+                        </button>
+                        <button 
+                            onClick={() => setView('feed')}
+                            className={`p-2 rounded-full transition-all ${view === 'feed' ? 'bg-white shadow text-wedding-600' : 'text-gray-400 hover:text-wedding-400'}`}
+                        >
+                            <Film size={20} />
+                        </button>
+                    </div>
+                </div>
+            </header>
+        );
+
+        // --- Upload Component ---
+        const UploadModal = ({ isOpen, onClose, onUpload, userName }) => {
+            const fileInputRef = useRef(null);
+            const [preview, setPreview] = useState(null);
+            const [uploading, setUploading] = useState(false);
+
+            if (!isOpen) return null;
+
+            const handleFileChange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    setPreview(URL.createObjectURL(file));
+                }
+            };
+
+            const handleUpload = async () => {
+                if (!fileInputRef.current.files[0]) return;
+                setUploading(true);
+                await onUpload(fileInputRef.current.files[0]);
+                setUploading(false);
+                setPreview(null);
+                onClose();
+            };
+
+            return (
+                <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+                    <div className="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl relative">
+                        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10">
+                            <X size={24} />
+                        </button>
+                        
+                        <div className="p-6 text-center">
+                            <h3 className="text-2xl font-serif text-wedding-800 mb-2">Compartilhar Momento</h3>
+                            <p className="text-gray-500 text-sm mb-6">Sua foto aparecerá na galeria dos noivos!</p>
+
+                            {!preview ? (
+                                <div 
+                                    onClick={() => fileInputRef.current.click()}
+                                    className="border-2 border-dashed border-wedding-300 rounded-2xl p-10 flex flex-col items-center justify-center cursor-pointer hover:bg-wedding-50 transition-colors"
+                                >
+                                    <Camera className="text-wedding-400 mb-3" size={48} />
+                                    <span className="text-wedding-600 font-medium">Tirar Foto ou Vídeo</span>
+                                    <input 
+                                        type="file" 
+                                        ref={fileInputRef} 
+                                        className="hidden" 
+                                        accept="image/*,video/*" 
+                                        capture="environment"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
+                            ) : (
+                                <div className="relative rounded-xl overflow-hidden mb-4 bg-black">
+                                    {preview.startsWith('blob:') && preview.includes('video') ? (
+                                        <video src={preview} controls className="w-full h-64 object-cover" />
+                                    ) : (
+                                        <img src={preview} alt="Preview" className="w-full h-64 object-cover" />
+                                    )}
+                                </div>
+                            )}
+
+                            <div className="flex gap-3 mt-4">
+                                {preview && (
+                                    <button 
+                                        onClick={() => setPreview(null)}
+                                        className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-50"
+                                    >
+                                        Cancelar
+                                    </button>
+                                )}
+                                <button 
+                                    onClick={handleUpload}
+                                    disabled={!preview || uploading}
+                                    className={`flex-1 py-3 rounded-xl font-bold text-white shadow-lg shadow-wedding-200 flex items-center justify-center gap-2
+                                        ${!preview || uploading ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-wedding-500 to-wedding-600 hover:from-wedding-600 hover:to-wedding-700'}
+                                    `}
+                                >
+                                    {uploading ? 'Enviando...' : (
+                                        <>
+                                            <Upload size={18} /> Enviar
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Grid Gallery View ---
+        const GridView = ({ photos }) => {
+            return (
+                <div className="pt-20 pb-24 px-2 max-w-md mx-auto animate-fade-in">
+                    <div className="columns-2 gap-2 space-y-2">
+                        {photos.map((photo) => (
+                            <div key={photo.id} className="break-inside-avoid relative group rounded-xl overflow-hidden shadow-sm bg-white">
+                                {photo.type === 'video' ? (
+                                    <video src={photo.url} className="w-full h-auto object-cover" />
+                                ) : (
+                                    <img src={photo.url} alt="Wedding moment" className="w-full h-auto object-cover" loading="lazy" />
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
+                                    <div className="flex items-center justify-between text-white">
+                                        <span className="text-xs font-medium flex items-center gap-1">
+                                            <User size={12} /> {photo.user}
+                                        </span>
+                                        <span className="text-xs flex items-center gap-1">
+                                            <Heart size={12} className="fill-white" /> {photo.likes}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    {photos.length === 0 && (
+                        <div className="text-center py-20 text-gray-400">
+                            <Camera size={48} className="mx-auto mb-4 opacity-50" />
+                            <p>Seja o primeiro a registrar este momento!</p>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // --- Reels/Feed View ---
+        const ReelItem = ({ photo, onLike, onComment }) => {
+            const [commentText, setCommentText] = useState('');
+            const [showComments, setShowComments] = useState(false);
+            const [isLiked, setIsLiked] = useState(false); // Estado local para animação visual
+            const videoRef = useRef(null);
+
+            // Auto play/pause on visibility (Simples)
+            useEffect(() => {
+                if (photo.type === 'video' && videoRef.current) {
+                    videoRef.current.play().catch(e => console.log("Autoplay bloqueado"));
+                }
+                return () => {
+                    if (photo.type === 'video' && videoRef.current) {
+                        videoRef.current.pause();
+                    }
+                };
+            }, [photo]);
+
+            const handleLike = () => {
+                setIsLiked(!isLiked);
+                onLike(photo.id, isLiked ? photo.likes - 1 : photo.likes + 1);
+            };
+
+            const handleSendComment = (e) => {
+                e.preventDefault();
+                if (!commentText.trim()) return;
+                onComment(photo.id, commentText);
+                setCommentText('');
+            };
+
+            return (
+                <div className="reels-item relative w-full bg-black flex flex-col justify-center">
+                    {/* Media Background */}
+                    <div className="absolute inset-0 w-full h-full">
+                        {photo.type === 'video' ? (
+                            <video ref={videoRef} src={photo.url} className="w-full h-full object-cover" loop playsInline />
+                        ) : (
+                            <img src={photo.url} alt="Moment" className="w-full h-full object-cover" />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80"></div>
+                    </div>
+
+                    {/* Overlay Content */}
+                    <div className="relative z-10 h-full flex flex-col justify-end pb-20 px-4 text-white">
+                        
+                        {/* User Info */}
+                        <div className="mb-4 animate-slide-up">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-wedding-500 flex items-center justify-center text-xs font-bold border border-white/30">
+                                    {photo.user.charAt(0)}
+                                </div>
+                                <span className="font-semibold text-sm shadow-black drop-shadow-md">@{photo.user}</span>
+                            </div>
+                            <p className="text-sm opacity-90 line-clamp-2 drop-shadow-md">
+                                Registrando esse momento incrível! #CasamentoAnaEJoao
+                            </p>
+                        </div>
+
+                        {/* Actions Bar (Right Side) */}
+                        <div className="absolute right-4 bottom-24 flex flex-col gap-6 items-center">
+                            <button onClick={handleLike} className="flex flex-col items-center gap-1 group">
+                                <div className={`p-3 rounded-full bg-white/10 backdrop-blur-sm transition-transform active:scale-90 ${isLiked ? 'text-red-500' : 'text-white'}`}>
+                                    <Heart size={28} className={isLiked ? 'fill-current' : ''} />
+                                </div>
+                                <span className="text-xs font-medium">{photo.likes}</span>
+                            </button>
+
+                            <button onClick={() => setShowComments(!showComments)} className="flex flex-col items-center gap-1">
+                                <div className="p-3 rounded-full bg-white/10 backdrop-blur-sm text-white transition-transform active:scale-90">
+                                    <MessageCircle size={28} />
+                                </div>
+                                <span className="text-xs font-medium">{photo.comments.length}</span>
+                            </button>
+
+                            <button className="flex flex-col items-center gap-1">
+                                <div className="p-3 rounded-full bg-white/10 backdrop-blur-sm text-white transition-transform active:scale-90">
+                                    <Share2 size={28} />
+                                </div>
+                            </button>
+                        </div>
+
+                        {/* Comments Drawer */}
+                        {showComments && (
+                            <div className="absolute bottom-0 left-0 w-full bg-white/10 backdrop-blur-xl rounded-t-3xl p-4 animate-slide-up border-t border-white/10 max-h-60 overflow-y-auto">
+                                <div className="flex justify-between items-center mb-3">
+                                    <h4 className="font-bold text-sm">Comentários</h4>
+                                    <button onClick={() => setShowComments(false)}><X size={16} /></button>
+                                </div>
+                                <div className="space-y-3 mb-4">
+                                    {photo.comments.length === 0 && <p className="text-xs opacity-70">Seja o primeiro a comentar!</p>}
+                                    {photo.comments.map((c, i) => (
+                                        <div key={i} className="text-xs">
+                                            <span className="font-bold mr-2">{c.user}</span>
+                                            <span className="opacity-90">{c.text}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <form onSubmit={handleSendComment} className="flex gap-2">
+                                    <input 
+                                        type="text" 
+                                        value={commentText}
+                                        onChange={(e) => setCommentText(e.target.value)}
+                                        placeholder="Adicione um comentário..."
+                                        className="flex-1 bg-white/20 border border-white/10 rounded-full px-4 py-2 text-sm text-white placeholder-white/50 focus:outline-none focus:bg-white/30"
+                                    />
+                                    <button type="submit" className="text-wedding-400 font-bold text-sm px-2">Enviar</button>
+                                </form>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const FeedView = ({ photos, onLike, onComment }) => {
+            return (
+                <div className="pt-16 pb-20 h-screen w-full bg-black animate-fade-in">
+                    <div className="reels-container hide-scrollbar w-full max-w-md mx-auto bg-black">
+                        {photos.map(photo => (
+                            <ReelItem key={photo.id} photo={photo} onLike={onLike} onComment={onComment} />
+                        ))}
+                        {photos.length === 0 && (
+                            <div className="h-full flex items-center justify-center text-white flex-col gap-4">
+                                <Film size={48} className="opacity-50" />
+                                <p className="text-sm opacity-70">Nenhum vídeo ou foto ainda.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Floating Action Button (FAB) ---
+        const Fab = ({ onClick }) => (
+            <button 
+                onClick={onClick}
+                className="fixed bottom-6 right-6 z-40 w-14 h-14 bg-wedding-600 hover:bg-wedding-700 text-white rounded-full shadow-xl shadow-wedding-500/40 flex items-center justify-center transition-transform active:scale-95 animate-slide-up"
+            >
+                <Camera size={28} strokeWidth={2.5} />
+            </button>
+        );
+
+        // --- Login Modal (Simples) ---
+        const LoginModal = ({ onLogin }) => {
+            const [name, setName] = useState('');
+            
+            return (
+                <div className="fixed inset-0 z-[60] bg-wedding-900 flex items-center justify-center p-6">
+                    <div className="w-full max-w-xs text-center text-white">
+                        <div className="w-20 h-20 bg-white/10 rounded-full mx-auto mb-6 flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <span className="serif text-4xl">❤</span>
+                        </div>
+                        <h1 className="text-3xl font-serif mb-2">Bem-vindo!</h1>
+                        <p className="text-wedding-200 mb-8 text-sm">Ajude-nos a registrar cada momento especial do nosso grande dia.</p>
+                        
+                        <input 
+                            type="text" 
+                            placeholder="Seu Nome" 
+                            className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:bg-white/20 mb-4 text-center"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                        
+                        <button 
+                            onClick={() => name.trim() && onLogin(name)}
+                            disabled={!name.trim()}
+                            className="w-full bg-white text-wedding-900 font-bold py-3 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Entrar na Festa
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // ==========================================
+        // APP PRINCIPAL
+        // ==========================================
+        const App = () => {
+            const [view, setView] = useState('grid'); // 'grid' ou 'feed'
+            const [photos, setPhotos] = useState([]);
+            const [isUploadOpen, setIsUploadOpen] = useState(false);
+            const [userName, setUserName] = useState(null);
+            const [toast, setToast] = useState(null);
+
+            // Carregar fotos ao iniciar
+            useEffect(() => {
+                const unsubscribe = subscribeToPhotos(setPhotos);
+                return () => { if(unsubscribe) unsubscribe(); };
+            }, []);
+
+            const handleLogin = (name) => {
+                setUserName(name);
+                setToast({ message: `Bem-vindo, ${name}!`, type: 'success' });
+            };
+
+            const handleUpload = async (file) => {
+                if (!userName) return;
+                try {
+                    await uploadPhoto(file, userName);
+                    setToast({ message: 'Foto enviada com sucesso!', type: 'success' });
+                } catch (error) {
+                    setToast({ message: 'Erro ao enviar foto.', type: 'error' });
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-wedding-50 text-gray-800">
+                    {!userName && <LoginModal onLogin={handleLogin} />}
+                    
+                    {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
+                    {userName && (
+                        <>
+                            <Header view={view} setView={setView} />
+                            
+                            {view === 'grid' ? (
+                                <GridView photos={photos} />
+                            ) : (
+                                <FeedView photos={photos} onLike={toggleLike} onComment={addComment} />
+                            )}
+
+                            <Fab onClick={() => setIsUploadOpen(true)} />
+                            
+                            <UploadModal 
+                                isOpen={isUploadOpen} 
+                                onClose={() => setIsUploadOpen(false)} 
+                                onUpload={handleUpload}
+                                userName={userName}
+                            />
+                        </>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
-
