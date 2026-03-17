@@ -1240,8 +1240,53 @@ const Upload = ({guest, onDone, onToast}) => {
     console.error(e);
     onToast('Erro ao enviar. Tente novamente.');
   }
-  finally{setBusy(false);setProg(0);}
+finally{setBusy(false);setProg(0);}
+  };
+
+  return (
+    <div className="upload" style={{animation:'fadeIn .3s ease'}}>
+      <div className="upload-hd">
+        <h2>Compartilhar Foto</h2>
+        <p>Eternize seu momento nesta galeria de amor</p>
+      </div>
+      <div className={`dropzone ${drag?'on':''}`}
+        onDragOver={e=>{e.preventDefault();setDrag(true);}}
+        onDragLeave={()=>setDrag(false)}
+        onDrop={e=>{e.preventDefault();setDrag(false);add(e.dataTransfer.files);}}>
+        <input type="file" accept="image/*" multiple capture="environment" onChange={e=>add(e.target.files)}/>
+        <div className="dropzone-ic"><CamIc width="26" height="26"/></div>
+        <h3>{files.length?`${files.length} foto${files.length>1?'s':''} selecionada${files.length>1?'s':''}` : 'Toque para fotografar'}</h3>
+        <p>{files.length?'Toque para trocar':'ou escolha da galeria · até 9 fotos'}</p>
+      </div>
+      {prevs.length>0 && (
+        <>
+          <div className="prev-grid">
+            {prevs.map((s,i)=>(
+              <div key={i} className="prev-cell" style={{animation:'scaleUp .28s ease'}}>
+                <img src={s} alt=""/>
+                <button className="prev-rm" onClick={()=>rm(i)}>✕</button>
+              </div>
+            ))}
+          </div>
+          <div className="f-lbl">Legenda</div>
+          <textarea className="f-input" placeholder="Conte sobre este momento especial…"
+            value={cap} onChange={e=>setCap(e.target.value)} maxLength={200}/>
+          {busy&&<div className="prog"><div className="prog-bar" style={{width:`${prog}%`}}/></div>}
+          <button className="btn-submit" onClick={submit} disabled={busy}>
+            {busy?`Publicando… ${prog}%`:'✦ Publicar na galeria'}
+          </button>
+        </>
+      )}
+      <div className="upload-tip">
+        <span>💌</span>
+        <p>Suas fotos são publicadas diretamente na galeria dos noivos e ficam visíveis para todos os convidados em tempo real.</p>
+      </div>
+    </div>
+  );
 };
+
+/* ─── SLIDESHOW ─────────────────────────────────────── */
+const Slideshow = ({photos, onClose}) => {
   
 /* ─── SLIDESHOW ─────────────────────────────────────── */
 const Slideshow = ({photos, onClose}) => {
@@ -1566,7 +1611,6 @@ const App = () => {
     </>
   );
 };
-
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>
