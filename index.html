@@ -695,23 +695,12 @@ animation:ssZoom var(--dur, 6s) ease forwards;
 0%{transform:scale(1)}
 100%{transform:scale(1.08)}
 }
-.ss-slide::before {
-  content: '';
-  position: absolute;
-  inset: -20px; /* compensa o overflow do blur */
-  background-image: inherit; /* herda a mesma foto */
-  background-size: cover;
-  background-position: center;
-  filter: blur(28px) brightness(0.35) saturate(0.6);
-  z-index: 0;
-}
 /* Gradient escuro nas bordas para dar foco */
 .ss-slide::after{
 content:'';position:absolute;inset:0;
 background:radial-gradient(ellipse at center,
 transparent 40%,
 rgba(0,0,0,.45) 100%
-z-index: 1;                  
 );
 }
 /* Barra de progresso do slide atual */
