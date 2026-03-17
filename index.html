@@ -1192,7 +1192,7 @@ const Upload = ({guest, onDone, onToast}) => {
   };
   const rm = i => { setFiles(f=>f.filter((_,j)=>j!==i)); setPrevs(p=>p.filter((_,j)=>j!==i)); };
 
-  cconst submit = async () => {
+  const submit = async () => {
   if(!files.length) return;
   const fb=window.__fb;
   if(!fb){onToast('Configure o Firebase primeiro!');return;}
