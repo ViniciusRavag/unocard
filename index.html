@@ -645,6 +645,217 @@ textarea.f-input{resize:none;height:76px}
   white-space:nowrap;pointer-events:none;
   animation:toastIn 2.7s ease forwards;
 }
+  /* ── SLIDESHOW ──────────────────────────────────────────── */
+.ss-overlay{
+position:fixed;inset:0;z-index:2000;
+background:#000;
+display:flex;flex-direction:column;
+animation:fadeIn .4s ease;
+}
+/* Força orientação landscape no mobile via CSS rotation trick */
+@media(max-width:768px) and (orientation:portrait){
+.ss-overlay{
+width:100dvh;
+height:100dvw;
+transform-origin:bottom left;
+transform:rotate(90deg) translateY(-100%);
+overflow:hidden;
+}
+}
+/* Slide individual */
+.ss-slide{
+position:absolute;inset:0;
+background-size:cover;
+background-position:center;
+opacity:0;
+transition:opacity 1s ease;
+will-change:opacity;
+}
+.ss-slide.ss-visible{opacity:1}
+.ss-slide.ss-exit{opacity:0}
+/* Zoom Ken Burns */
+.ss-slide.ss-zoom{
+animation:ssZoom var(--dur, 6s) ease forwards;
+}
+@keyframes ssZoom{
+0%{transform:scale(1)}
+100%{transform:scale(1.08)}
+}
+/* Gradient escuro nas bordas para dar foco */
+.ss-slide::after{
+content:'';position:absolute;inset:0;
+background:radial-gradient(ellipse at center,
+transparent 40%,
+rgba(0,0,0,.45) 100%
+);
+}
+/* Barra de progresso do slide atual */
+.ss-progress{
+position:absolute;bottom:0;left:0;
+height:3px;
+background:linear-gradient(90deg,#f43f5e,#ec4899);
+border-radius:0 2px 0 0;
+transition:none;
+z-index:10;
+}
+@keyframes ssProgressAnim{
+from{width:0}
+to{width:100%}
+}
+.ss-progress.animating{
+animation:ssProgressAnim var(--dur,6s) linear forwards;
+}
+/* Dots indicadores */
+.ss-dots{
+position:absolute;bottom:16px;left:50%;
+transform:translateX(-50%);
+display:flex;gap:6px;align-items:center;
+z-index:10;
+}
+.ss-dot{
+width:6px;height:6px;border-radius:50%;
+background:rgba(255,255,255,.35);
+transition:all .3s ease;
+}
+.ss-dot.on{
+background:#fff;
+transform:scale(1.4);
+}
+/* Painel de controles (aparece ao hover/tap) */
+.ss-controls{
+position:absolute;inset:0;z-index:20;
+display:flex;flex-direction:column;
+justify-content:space-between;
+padding:20px;
+opacity:0;
+transition:opacity .3s ease;
+pointer-events:none;
+}
+.ss-overlay:hover .ss-controls,
+.ss-controls.visible{
+opacity:1;pointer-events:all;
+}
+.ss-controls-top{
+display:flex;align-items:center;justify-content:space-between;
+}
+.ss-controls-bottom{
+display:flex;align-items:center;justify-content:center;gap:20px;
+}
+/* Título overlay */
+.ss-title{
+font-family:'Cormorant Garamond',serif;
+font-size:clamp(.9rem,3vw,1.4rem);
+font-style:italic;
+color:rgba(255,255,255,.8);
+text-shadow:0 2px 12px rgba(0,0,0,.8);
+letter-spacing:.04em;
+}
+.ss-sub{
+font-size:clamp(.6rem,2vw,.75rem);
+color:rgba(255,255,255,.45);
+letter-spacing:.15em;
+text-transform:uppercase;
+margin-top:3px;
+}
+/* Botões de controle */
+.ss-btn{
+width:44px;height:44px;border-radius:50%;
+background:rgba(255,255,255,.15);
+backdrop-filter:blur(12px);
+border:1px solid rgba(255,255,255,.2);
+color:#fff;cursor:pointer;
+display:flex;align-items:center;justify-content:center;
+transition:all .2s;font-family:inherit;
+}
+.ss-btn:hover{background:rgba(255,255,255,.28)}
+.ss-btn:active{transform:scale(.9)}
+.ss-btn svg{width:18px;height:18px;stroke-width:2}
+.ss-btn-exit{
+background:rgba(244,63,94,.25);
+border-color:rgba(244,63,94,.4);
+}
+.ss-btn-exit:hover{background:rgba(244,63,94,.45)}
+/* Botão play/pause grande */
+.ss-btn-play{
+width:54px;height:54px;border-radius:50%;
+background:linear-gradient(135deg,#f43f5e,#ec4899);
+border:none;color:#fff;cursor:pointer;
+display:flex;align-items:center;justify-content:center;
+box-shadow:0 6px 20px rgba(244,63,94,.45);
+transition:all .2s;font-family:inherit;
+}
+.ss-btn-play:hover{box-shadow:0 8px 28px rgba(244,63,94,.6);transform:scale(1.06)}
+.ss-btn-play:active{transform:scale(.93)}
+.ss-btn-play svg{width:22px;height:22px;stroke-width:2}
+/* Info da foto atual */
+.ss-photo-info{
+position:absolute;left:20px;bottom:40px;z-index:10;
+max-width:60%;
+opacity:0;transition:opacity .3s ease;pointer-events:none;
+}
+.ss-overlay:hover .ss-photo-info,
+.ss-controls.visible~.ss-photo-info{opacity:1}
+.ss-photo-author{
+font-size:.8rem;font-weight:600;color:#fff;
+text-shadow:0 2px 8px rgba(0,0,0,.8);
+margin-bottom:3px;
+}
+.ss-photo-caption{
+font-size:.75rem;color:rgba(255,255,255,.65);
+text-shadow:0 1px 6px rgba(0,0,0,.8);
+line-height:1.4;
+max-width:280px;
+}
+/* Speed selector */
+.ss-speed-wrap{
+display:flex;align-items:center;gap:8px;
+}
+.ss-speed-label{
+font-size:.65rem;color:rgba(255,255,255,.5);
+letter-spacing:.1em;text-transform:uppercase;
+}
+.ss-speed-btn{
+padding:5px 11px;border-radius:50px;border:1px solid rgba(255,255,255,.2);
+background:transparent;color:rgba(255,255,255,.5);
+cursor:pointer;font-family:inherit;font-size:.7rem;font-weight:600;
+transition:all .2s;
+}
+.ss-speed-btn.on{
+background:rgba(244,63,94,.35);
+border-color:rgba(244,63,94,.5);
+color:#fff;
+}
+
+.ss-rotate-hint{
+position:absolute;inset:0;z-index:30;
+background:rgba(0,0,0,.88);
+display:none;flex-direction:column;align-items:center;justify-content:center;
+gap:16px;text-align:center;padding:40px;
+}
+/ Apenas mostra no portrait em telas pequenas quando NÃO estiver rotacionado pelo CSS /
+@media(max-width:600px) and (orientation:portrait){
+.ss-rotate-hint{display:none} / CSS já rotaciona, não precisa do hint */
+}
+.ss-rotate-icon{font-size:3rem;animation:rotateHint 2s ease infinite}
+@keyframes rotateHint{
+0%,100%{transform:rotate(0deg)}
+50%{transform:rotate(90deg)}
+}
+.ss-rotate-hint h3{
+font-family:'Cormorant Garamond',serif;
+font-size:1.3rem;color:#fff;
+}
+.ss-rotate-hint p{font-size:.8rem;color:rgba(255,255,255,.5)}
+/* Entrada do botão de slideshow na nav bottom */
+.bnav-ss{
+background:rgba(244,63,94,.08);
+border:1.5px solid rgba(244,63,94,.2) !important;
+color:#f43f5e !important;
+}
+.bnav-ss.on{
+background:rgba(244,63,94,.18) !important;
+color:#f43f5e !important;
+}
 </style>
 </head>
 <body>
@@ -783,9 +994,40 @@ const Gallery = ({photos, loading, guest, onPick, onLike}) => {
       <div className="gallery-hd">
         <div>
           <h2>Galeria</h2>
-          <div className="gallery-hd-sub">{photos.length} {photos.length===1?'momento':'momentos'}</div>
-        </div>
-        {photos.length>0 && <div className="gallery-pill">♥ {likes}</div>}
+          const Gallery = ({photos, loading, guest, onPick, onLike, onSlideshow}) => {
+const likes = photos.reduce((a,p)=>a+(p.likes||[]).length,0);
+return (
+<div className="gallery" style={{animation:'fadeIn .3s ease'}}>
+<div className="gallery-hd">
+<div>
+<h2>Galeria</h2>
+<div className="gallery-hd-sub">{photos.length} {photos.length===1?'momento':'momentos'}</div>
+</div>
+<div style={{display:'flex',alignItems:'center',gap:8}}>
+{photos.length>0 && (
+<button
+onClick={onSlideshow}
+style={{
+display:'flex',alignItems:'center',gap:6,
+background:'rgba(244,63,94,.08)',border:'1px solid rgba(244,63,94,.2)',
+borderRadius:'50px',padding:'6px 12px',
+fontSize:'.7rem',color:'#f43f5e',fontWeight:600,cursor:'pointer',
+fontFamily:'inherit',transition:'all .2s',
+}}
+title="Apresentação de slides"
+>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14" strokeWidth="2">
+<rect x="2" y="3" width="20" height="14" rx="2"/>
+<line x1="8" y1="21" x2="16" y2="21"/>
+<line x1="12" y1="17" x2="12" y2="21"/>
+</svg>
+Slideshow
+</button>
+)}
+{photos.length>0 && <div className="gallery-pill">♥ {likes}</div>}
+</div>
+</div>
+{/*
       </div>
       {loading
         ? <div className="gallery-grid">{[...Array(6)].map((_,i)=><div key={i} className="g-skel"/>)}</div>
@@ -1023,7 +1265,134 @@ const Upload = ({guest, onDone, onToast}) => {
     </div>
   );
 };
+/* ─── SLIDESHOW ─────────────────────────────────────── */
+const Slideshow = ({photos, onClose}) => {
+const SPEEDS = [{label:'3s',val:3000},{label:'5s',val:5000},{label:'8s',val:8000}];
+const [cur,      setCur]      = React.useState(0);
+const [paused,   setPaused]   = React.useState(false);
+const [speed,    setSpeed]    = React.useState(1); // index into SPEEDS
+const [showCtrl, setShowCtrl] = React.useState(true);
+const [key,      setKey]      = React.useState(0); // força reset da animação
+const timerRef  = React.useRef(null);
+const ctrlTimer = React.useRef(null);
+const dur = SPEEDS[speed].val;
+// Auto-advance
+React.useEffect(()=>{
+if(paused || !photos.length) return;
+clearTimeout(timerRef.current);
+timerRef.current = setTimeout(()=>{
+setCur(c=>(c+1)%photos.length);
+setKey(k=>k+1);
+}, dur);
+return ()=>clearTimeout(timerRef.current);
+},[cur, paused, dur, photos.length]);
+// Auto-hide controls
+React.useEffect(()=>{
+if(!showCtrl) return;
+clearTimeout(ctrlTimer.current);
+ctrlTimer.current = setTimeout(()=>setShowCtrl(false), 3500);
+return ()=>clearTimeout(ctrlTimer.current);
+},[showCtrl]);
+const prev = ()=>{ setCur(c=>(c-1+photos.length)%photos.length); setKey(k=>k+1); };
+const next = ()=>{ setCur(c=>(c+1)%photos.length); setKey(k=>k+1); };
+const tap  = ()=>{ setShowCtrl(true); };
+if(!photos.length) return null;
+const photo = photos[cur];
+return (
+<div className="ss-overlay" onClick={tap}>
+  {/* Slides — renderiza atual, anterior e próximo para crossfade suave */}
+  {photos.map((p,i)=>(
+    <div
+      key={p.id}
+      className={`ss-slide ${i===cur?'ss-visible ss-zoom':''}`}
+      style={{
+        backgroundImage:`url(${p.url})`,
+        '--dur':`${dur}ms`,
+        zIndex: i===cur ? 2 : 1,
+      }}
+    />
+  ))}
 
+  {/* Barra de progresso */}
+  {!paused && (
+    <div
+      key={`prog-${key}`}
+      className="ss-progress animating"
+      style={{'--dur':`${dur}ms`}}
+    />
+  )}
+
+  {/* Info da foto */}
+  <div className={`ss-photo-info ${showCtrl?'':'hidden'}`}
+    style={{opacity:showCtrl?1:0,transition:'opacity .3s',position:'absolute',left:20,bottom:44,zIndex:10,maxWidth:'60%',pointerEvents:'none'}}>
+    <div className="ss-photo-author">📷 {photo.author}</div>
+    {photo.caption && <div className="ss-photo-caption">{photo.caption}</div>}
+  </div>
+
+  {/* Dots */}
+  {photos.length <= 12 && (
+    <div className="ss-dots" style={{zIndex:showCtrl?10:5,opacity:showCtrl?.9:.3,transition:'opacity .3s'}}>
+      {photos.map((_,i)=>(
+        <div key={i} className={`ss-dot ${i===cur?'on':''}`}
+          onClick={e=>{e.stopPropagation();setCur(i);setKey(k=>k+1);}}/>
+      ))}
+    </div>
+  )}
+
+  {/* Painel de controles */}
+  <div
+    className={`ss-controls ${showCtrl?'visible':''}`}
+    onClick={e=>e.stopPropagation()}
+  >
+    {/* Topo */}
+    <div className="ss-controls-top">
+      <div>
+        <div className="ss-title">✦ Nossa História</div>
+        <div className="ss-sub">{cur+1} / {photos.length}</div>
+      </div>
+      <button className="ss-btn ss-btn-exit" onClick={onClose}>
+        <XIc width="18" height="18" strokeWidth="2.2"/>
+      </button>
+    </div>
+
+    {/* Controles centrais */}
+    <div className="ss-controls-bottom">
+      {/* Prev */}
+      <button className="ss-btn" onClick={prev}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18" strokeWidth="2.2">
+          <polyline points="15,18 9,12 15,6"/>
+        </svg>
+      </button>
+
+      {/* Play / Pause */}
+      <button className="ss-btn-play" onClick={()=>setPaused(p=>!p)}>
+        {paused
+          ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="22" height="22" strokeWidth="2"><polygon points="5,3 19,12 5,21"/></svg>
+          : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="22" height="22" strokeWidth="2"><line x1="6" y1="4" x2="6" y2="20"/><line x1="18" y1="4" x2="18" y2="20"/></svg>
+        }
+      </button>
+
+      {/* Next */}
+      <button className="ss-btn" onClick={next}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18" strokeWidth="2.2">
+          <polyline points="9,18 15,12 9,6"/>
+        </svg>
+      </button>
+
+      {/* Speed selector */}
+      <div className="ss-speed-wrap" style={{marginLeft:12}}>
+        <span className="ss-speed-label">Vel.</span>
+        {SPEEDS.map((s,i)=>(
+          <button key={i} className={`ss-speed-btn ${i===speed?'on':''}`}
+            onClick={()=>{setSpeed(i);setKey(k=>k+1);}}>
+            {s.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+  
 /* ─── HOME ──────────────────────────────────────────── */
 const Home = ({photos, onNav}) => {
   const likes = photos.reduce((a,p)=>a+(p.likes||[]).length,0);
@@ -1116,6 +1485,7 @@ const App = () => {
   const [lb,      setLb]      = useState(null);
   const [toast,   setToast]   = useState(null);
   const [ready,   setReady]   = useState(false);
+  const [showSS,  setShowSS]  = useState(false);
 
   useEffect(()=>{ setTimeout(()=>setReady(true), 1900); },[]);
 
@@ -1166,30 +1536,39 @@ const App = () => {
 
       <div style={{flex:1,overflow:'hidden',display:'flex',flexDirection:'column'}}>
         {tab==='home'    && <Home    photos={photos} onNav={go}/>}
-        {tab==='gallery' && <Gallery photos={photos} loading={loading} guest={guest} onPick={p=>setLb(p)} onLike={likePhoto}/>}
+        {tab==='gallery' && <Gallery photos={photos} loading={loading} guest={guest} onPick={p=>setLb(p)} onLike={likePhoto} onSlideshow={()=>setShowSS(true)}/>}
         {tab==='feed'    && <Feed    photos={[...photos].reverse()} guest={guest} onUpdate={upd} onUpload={()=>go('upload')}/>}
         {tab==='upload'  && <Upload  guest={guest} onToast={toast_} onDone={()=>{toast_('Foto publicada! 🌸');go('gallery');}}/>}
       </div>
 
       {/* bottom nav */}
-      <div className="bnav">
-        <button className={`bnav-btn ${tab==='home'?'on':''}`} onClick={()=>go('home')}>
-          <HomeIc width="21" height="21"/><span>Início</span>
-        </button>
-        <button className={`bnav-btn ${tab==='gallery'?'on':''}`} onClick={()=>go('gallery')}>
-          <GridIc width="21" height="21"/><span>Galeria</span>
-        </button>
-        <button className="bnav-btn bnav-cam" onClick={()=>go('upload')}>
-          <CamIc width="21" height="21" strokeWidth="1.6"/>
-          <span style={{fontSize:'.58rem',letterSpacing:'.09em',textTransform:'uppercase',fontWeight:600}}>Publicar</span>
-        </button>
-        <button className={`bnav-btn ${tab==='feed'?'on':''}`} onClick={()=>go('feed')}>
-          <PlayIc width="21" height="21"/><span>Feed</span>
-        </button>
-      </div>
+  <div className="bnav">
+    <button className={`bnav-btn ${tab==='home'?'on':''}`} onClick={()=>go('home')}>
+      <HomeIc width="21" height="21"/><span>Início</span>
+    </button>
+    <button className={`bnav-btn ${tab==='gallery'?'on':''}`} onClick={()=>go('gallery')}>
+      <GridIc width="21" height="21"/><span>Galeria</span>
+    </button>
+    <button className="bnav-btn bnav-cam" onClick={()=>go('upload')}>
+      <CamIc width="21" height="21" strokeWidth="1.6"/>
+      <span style={{fontSize:'.58rem',letterSpacing:'.09em',textTransform:'uppercase',fontWeight:600}}>Publicar</span>
+    </button>
+    <button className={`bnav-btn ${tab==='feed'?'on':''}`} onClick={()=>go('feed')}>
+      <PlayIc width="21" height="21"/><span>Feed</span>
+    </button>
+    <button className={`bnav-btn bnav-ss`} onClick={()=>setShowSS(true)} title="Apresentação de slides">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="21" height="21" strokeWidth="1.8">
+        <rect x="2" y="3" width="20" height="14" rx="2"/>
+        <line x1="8" y1="21" x2="16" y2="21"/>
+        <line x1="12" y1="17" x2="12" y2="21"/>
+      </svg>
+      <span>Slides</span>
+    </button>
+  </div>
 
       {lb && <Lightbox photo={lb} guest={guest} onClose={()=>setLb(null)} onLike={likePhoto} onComment={addCom}/>}
-      {toast && <Toast msg={toast} onDone={()=>setToast(null)}/>}
+  {toast && <Toast msg={toast} onDone={()=>setToast(null)}/>}
+  {showSS && <Slideshow photos={photos} onClose={()=>setShowSS(false)}/>}
     </>
   );
 };
