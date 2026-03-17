@@ -987,47 +987,27 @@ const Lightbox = ({photo, guest, onClose, onLike, onComment}) => {
 };
 
 /* ─── GALLERY ───────────────────────────────────────── */
-const Gallery = ({photos, loading, guest, onPick, onLike}) => {
+const Gallery = ({photos, loading, guest, onPick, onLike, onSlideshow}) => {
   const likes = photos.reduce((a,p)=>a+(p.likes||[]).length,0);
   return (
     <div className="gallery" style={{animation:'fadeIn .3s ease'}}>
       <div className="gallery-hd">
         <div>
           <h2>Galeria</h2>
-          const Gallery = ({photos, loading, guest, onPick, onLike, onSlideshow}) => {
-const likes = photos.reduce((a,p)=>a+(p.likes||[]).length,0);
-return (
-<div className="gallery" style={{animation:'fadeIn .3s ease'}}>
-<div className="gallery-hd">
-<div>
-<h2>Galeria</h2>
-<div className="gallery-hd-sub">{photos.length} {photos.length===1?'momento':'momentos'}</div>
-</div>
-<div style={{display:'flex',alignItems:'center',gap:8}}>
-{photos.length>0 && (
-<button
-onClick={onSlideshow}
-style={{
-display:'flex',alignItems:'center',gap:6,
-background:'rgba(244,63,94,.08)',border:'1px solid rgba(244,63,94,.2)',
-borderRadius:'50px',padding:'6px 12px',
-fontSize:'.7rem',color:'#f43f5e',fontWeight:600,cursor:'pointer',
-fontFamily:'inherit',transition:'all .2s',
-}}
-title="Apresentação de slides"
->
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14" strokeWidth="2">
-<rect x="2" y="3" width="20" height="14" rx="2"/>
-<line x1="8" y1="21" x2="16" y2="21"/>
-<line x1="12" y1="17" x2="12" y2="21"/>
-</svg>
-Slideshow
-</button>
-)}
-{photos.length>0 && <div className="gallery-pill">♥ {likes}</div>}
-</div>
-</div>
-{/*
+          <div className="gallery-hd-sub">{photos.length} {photos.length===1?'momento':'momentos'}</div>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          {photos.length>0 && (
+            <button
+              onClick={onSlideshow}
+              style={{display:'flex',alignItems:'center',gap:6,background:'rgba(244,63,94,.08)',border:'1px solid rgba(244,63,94,.2)',borderRadius:'50px',padding:'6px 12px',fontSize:'.7rem',color:'#f43f5e',fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .2s'}}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              Slideshow
+            </button>
+          )}
+          {photos.length>0 && <div className="gallery-pill">♥ {likes}</div>}
+        </div>
       </div>
       {loading
         ? <div className="gallery-grid">{[...Array(6)].map((_,i)=><div key={i} className="g-skel"/>)}</div>
