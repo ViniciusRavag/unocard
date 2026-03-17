@@ -1427,16 +1427,16 @@ const Home = ({photos, onNav}) => {
           <div className="home-chip"><PinIc/>Franca, SP</div>
         </div>
         <div className="home-btns">
-          <button className="hbtn hbtn-primary" onClick={()=>onNav('feed')}>
-            <PlayIc width="18" height="18"/> Ver Feed
-          </button>
-          <button className="hbtn hbtn-white" onClick={()=>onNav('gallery')}>
-            <GridIc width="18" height="18"/> Galeria de Fotos
-          </button>
-          <button className="hbtn hbtn-ghost" onClick={()=>onNav('upload')}>
-            <CamIc width="18" height="18"/> Compartilhar Momento
-          </button>
-        </div>
+  <button className="hbtn hbtn-primary" onClick={()=>onNav('upload')}>
+    <CamIc width="18" height="18"/> Compartilhar Momento
+  </button>
+  <button className="hbtn hbtn-white" onClick={()=>onNav('gallery')}>
+    <GridIc width="18" height="18"/> Galeria de Fotos
+  </button>
+  <button className="hbtn hbtn-white" onClick={()=>onNav('feed')}>
+    <PlayIc width="18" height="18"/> Ver Feed
+  </button>
+</div>
         <div className="home-stats">
           <div className="stat"><div className="stat-n">{photos.length}</div><div className="stat-l">Fotos</div></div>
           <div className="stat"><div className="stat-n">{likes}</div><div className="stat-l">Curtidas</div></div>
