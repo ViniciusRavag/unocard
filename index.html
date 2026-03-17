@@ -856,6 +856,9 @@ color:#f43f5e !important;
 background:rgba(244,63,94,.18) !important;
 color:#f43f5e !important;
 }
+  @media(max-width:768px){
+  .bnav-ss{ display:none !important; }
+}
 </style>
 </head>
 <body>
@@ -1266,6 +1269,16 @@ setKey(k=>k+1);
 }, dur);
 return ()=>clearTimeout(timerRef.current);
 },[cur, paused, dur, photos.length]);
+  // Entra em fullscreen ao abrir, sai ao fechar
+  React.useEffect(()=>{
+    const el = document.documentElement;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+    if(req) req.call(el).catch(()=>{});
+    return ()=>{
+      const ex = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+      if(ex) ex.call(document).catch(()=>{});
+    };
+  },[]);
 // Auto-hide controls
 React.useEffect(()=>{
 if(!showCtrl) return;
@@ -1330,9 +1343,13 @@ return (
         <div className="ss-title">✦ Nossa História</div>
         <div className="ss-sub">{cur+1} / {photos.length}</div>
       </div>
-      <button className="ss-btn ss-btn-exit" onClick={onClose}>
-        <XIc width="18" height="18" strokeWidth="2.2"/>
-      </button>
+      <button className="ss-btn ss-btn-exit" onClick={()=>{
+            const ex=document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen||document.msExitFullscreen;
+            if(ex) ex.call(document).catch(()=>{});
+            onClose();
+          }}>
+            <XIc width="18" height="18" strokeWidth="2.2"/>
+          </button>
     </div>
 
     {/* Controles centrais */}
