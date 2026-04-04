@@ -1297,7 +1297,7 @@ const Upload = ({guest, onDone, onToast}) => {
         <input type="file" accept="image/*" multiple capture="environment" onChange={e=>add(e.target.files)}/>
         <div className="dropzone-ic"><CamIc width="26" height="26"/></div>
         <h3>{files.length?`${files.length} foto${files.length>1?'s':''} selecionada${files.length>1?'s':''}` : 'Toque para fotografar'}</h3>
-        <p>{files.length?'Toque para trocar':'ou escolha da galeria · até 9 fotos'}</p>
+        <p>{files.length?'Toque para trocar':'sua foto será lembrada para sempre'}</p>
       </div>
 
       {prevs.length>0 && (
@@ -1758,7 +1758,7 @@ const App = () => {
     </button>
     <button className="bnav-btn bnav-cam" onClick={()=>go('upload')}>
       <CamIc width="21" height="21" strokeWidth="1.6"/>
-      <span style={{fontSize:'.58rem',letterSpacing:'.09em',textTransform:'uppercase',fontWeight:600}}>Publicar</span>
+      <span style={{fontSize:'.58rem',letterSpacing:'.09em',textTransform:'uppercase',fontWeight:600}}>Fotografar</span>
     </button>
     <button className={`bnav-btn ${tab==='feed'?'on':''}`} onClick={()=>go('feed')}>
       <PlayIc width="21" height="21"/><span>Feed</span>
